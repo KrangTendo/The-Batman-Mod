@@ -1,11 +1,13 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "net.westankrang.batmanmod.mixin",
+  "package": "net.westankrang.batmanmod.mixins",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
   ],
   "client": [
+    "client.ArmorFeatureRendererMixin",
+    "client.PlayerEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
