@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "batman",
+  "version": "${version}",
+  "name": "BatmanMod",
+  "description": "This is a Batman Mod",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/batman/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-datagen": [
+      "net.westankrang.batmanmod.client.BatmanModDataGenerator"
+    ],
+    "client": [
+      "net.westankrang.batmanmod.client.BatmanModClient"
+    ],
+    "main": [
+      "net.westankrang.batmanmod.BatmanMod"
+    ]
+  },
+  "mixins": [
+    "batman.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
