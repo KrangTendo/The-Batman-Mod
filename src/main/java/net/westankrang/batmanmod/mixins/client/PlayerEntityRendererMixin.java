@@ -69,41 +69,34 @@ public abstract class PlayerEntityRendererMixin
         }
     }
 
-    @Inject(
-            method = "render",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/client/render/entity/PlayerEntityRenderer;setModelPose(Lnet/minecraft/client/network/AbstractClientPlayerEntity;)V",
-                    shift = At.Shift.AFTER
-            )
-    )
-    private void batman$hideBodyWhenWearingArmor(
-            AbstractClientPlayerEntity player,
-            float f, float g,
-            MatrixStack matrices,
-            VertexConsumerProvider vertexConsumers,
-            int light,
-            CallbackInfo ci) {
-
+    @Inject(method = "setModelPose", at = @At("HEAD"), cancellable = true)
+    private void batman$overrideSetModelPose(AbstractClientPlayerEntity player, CallbackInfo ci) {
         PlayerEntityModel<AbstractClientPlayerEntity> model = this.getModel();
 
-        if ((player.getEquippedStack(EquipmentSlot.CHEST).getItem() instanceof BatmanArmorItem)) {
+        if (player.getEquippedStack(EquipmentSlot.HEAD).getItem() instanceof BatmanArmorItem) {
             model.head.visible = true;
             model.hat.visible = false;
+            ci.cancel();
         }
 
+        if (player.getEquippedStack(EquipmentSlot.CHEST).getItem() instanceof BatmanArmorItem) {
+            model.body.visible = false;
+            model.jacket.visible = false;
 
-        model.body.visible = false;
-        model.jacket.visible = false;
+            model.leftArm.visible = false;
+            model.rightArm.visible = false;
+            model.leftSleeve.visible = false;
+            model.rightSleeve.visible = false;
+            ci.cancel();
+        }
 
-        model.leftArm.visible = false;
-        model.rightArm.visible = false;
-        model.leftSleeve.visible = false;
-        model.rightSleeve.visible = false;
+        if (player.getEquippedStack(EquipmentSlot.FEET).getItem() instanceof BatmanArmorItem) {
+            model.leftLeg.visible = false;
+            model.rightLeg.visible = false;
+            model.leftPants.visible = false;
+            model.rightPants.visible = false;
 
-        model.leftLeg.visible = false;
-        model.rightLeg.visible = false;
-        model.leftPants.visible = false;
-        model.rightPants.visible = false;
+            ci.cancel();
+        }
     }
 }

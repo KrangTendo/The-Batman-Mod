@@ -7,6 +7,9 @@
   ],
   "client": [
     "client.ArmorFeatureRendererMixin",
+    "client.ItemRendererAccessor",
+    "client.ItemRendererMixin",
+    "client.ModelLoaderMixin",
     "client.PlayerEntityRendererMixin"
   ],
   "injectors": {

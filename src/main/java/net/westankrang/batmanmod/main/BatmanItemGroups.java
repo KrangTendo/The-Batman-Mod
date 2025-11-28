@@ -10,12 +10,20 @@ import net.minecraft.util.Identifier;
 import net.westankrang.batmanmod.BatmanMod;
 
 public class BatmanItemGroups {
-    public static final ItemGroup BATARANG_GROUP = Registry.register(Registries.ITEM_GROUP,
+    public static final ItemGroup BATARANG_GROUP = Registry.register(
+            Registries.ITEM_GROUP,
             new Identifier(BatmanMod.MOD_ID, "batarang"),
-            FabricItemGroup.builder().displayName(Text.translatable("itemgroup.batarang"))
-                    .icon(() -> new ItemStack(BatmanItems.BATARANG)).entries((displayContext, entries) -> {
-                        entries.add(BatmanItems.BATARANG);
-                    }).build());
+            FabricItemGroup.builder()
+                    .displayName(Text.translatable("batman_mod.item_group"))
+                    .icon(() -> new ItemStack(BatmanItems.BATARANG))
+                    .entries((displayContext, entries) -> {
+                        Registries.ITEM.stream()
+                                .filter(item -> Registries.ITEM.getId(item).getNamespace().equals(BatmanMod.MOD_ID))
+                                .forEach(entries::add);
+                    })
+                    .build()
+    );
+
 
     public static void registerItemGroups() {
         BatmanMod.LOGGER.info("Registering Item Groups for " + BatmanMod.MOD_ID);

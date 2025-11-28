@@ -23,6 +23,7 @@ import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import net.westankrang.batmanmod.main.BatmanEntities;
 import net.westankrang.batmanmod.main.BatmanItems;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,7 +39,7 @@ public class BatarangProjectileEntity extends PersistentProjectileEntity {
     }
 
     public BatarangProjectileEntity(World world, LivingEntity owner, ItemStack stack) {
-        super(EntityType.TRIDENT, owner, world);
+        super(BatmanEntities.BATARANG_PROJECTILE, owner, world);
         this.tridentStack = stack.copy();
         this.dataTracker.set(LOYALTY, (byte)EnchantmentHelper.getLoyalty(stack));
         this.dataTracker.set(ENCHANTED, stack.hasGlint());

@@ -21,5 +21,6 @@ public class BatmanModModelProvider extends FabricModelProvider {
     @Override
     public void generateItemModels(ItemModelGenerator itemModelGenerator) {
         itemModelGenerator.register(BatmanItems.BATARANG, Models.HANDHELD_ROD);
+        itemModelGenerator.register(BatmanItems.BAT_KNUCKLES, Models.HANDHELD_ROD);
     }
 }

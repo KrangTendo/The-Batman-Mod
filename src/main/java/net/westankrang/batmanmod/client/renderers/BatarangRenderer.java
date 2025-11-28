@@ -2,6 +2,7 @@ package net.westankrang.batmanmod.client.renderers;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.RenderLayer;
 import net.minecraft.client.render.VertexConsumer;
@@ -9,23 +10,27 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.client.render.entity.ProjectileEntityRenderer;
+import net.minecraft.client.render.item.ItemRenderer;
+import net.minecraft.client.render.model.BakedModel;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
+import net.minecraft.client.texture.SpriteAtlasTexture;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.projectile.PersistentProjectileEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
-import org.joml.Matrix3f;
-import org.joml.Matrix4f;
-import net.westankrang.batmanmod.BatmanMod;
+import net.westankrang.batmanmod.main.BatmanItems;
 
 @Environment(EnvType.CLIENT)
-public class BatarangRenderer extends ProjectileEntityRenderer<PersistentProjectileEntity> {
+public class BatarangRenderer extends EntityRenderer<PersistentProjectileEntity> {
 
-    private static final Identifier TEXTURE =
-            new Identifier(BatmanMod.MOD_ID, "textures/item/batarang.png");
+    private final ItemRenderer itemRenderer;
+    private static final ItemStack BATARANG_STACK = new ItemStack(BatmanItems.BATARANG);
 
     public BatarangRenderer(EntityRendererFactory.Context ctx) {
         super(ctx);
+        this.itemRenderer = ctx.getItemRenderer();
     }
 
     @Override
@@ -33,35 +38,27 @@ public class BatarangRenderer extends ProjectileEntityRenderer<PersistentProject
                        MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light) {
 
         matrices.push();
+        matrices.translate(0, 0.1F, 0);
 
-        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(
-                MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw()) - 90f
-        ));
-        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(
-                MathHelper.lerp(tickDelta, entity.prevPitch, entity.getPitch())
-        ));
+        float rotationYaw = MathHelper.lerp(tickDelta, entity.prevYaw, entity.getYaw()) - 90f;
+        float rotationPitch = MathHelper.lerp(tickDelta, entity.prevPitch, entity.getPitch())- 90f;
+
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(rotationYaw));
+        matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(rotationPitch));
 
 
-        float spin = (entity.age + tickDelta) * 40f;
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(spin));
+        BakedModel model = itemRenderer.getModel(BATARANG_STACK, entity.getWorld(), null, 0);
 
-        float shake = (float) entity.shake - tickDelta;
-        if (shake > 0f) {
-            float shakeRot = -MathHelper.sin(shake * 3f) * shake;
-            matrices.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(shakeRot));
-        }
-
-        matrices.multiply(RotationAxis.POSITIVE_X.rotationDegrees(45f));
-        matrices.scale(0.05625f, 0.05625f, 0.05625f);
-        matrices.translate(-4f, 0f, 0f);
-
-        VertexConsumer vc = vertexConsumers.getBuffer(RenderLayer.getEntityCutout(TEXTURE));
-        MatrixStack.Entry entry = matrices.peek();
-        Matrix4f mat = entry.getPositionMatrix();
-        Matrix3f normal = entry.getNormalMatrix();
-
-        this.vertex(mat, normal, vc, -7, -2, -2, 0f,        0.15625f, -1, 0, 0, light);
-
+        itemRenderer.renderItem(
+                BATARANG_STACK,
+                ModelTransformationMode.GROUND,
+                false,
+                matrices,
+                vertexConsumers,
+                light,
+                OverlayTexture.DEFAULT_UV,
+                model
+        );
 
         matrices.pop();
         super.render(entity, yaw, tickDelta, matrices, vertexConsumers, light);
@@ -69,19 +66,7 @@ public class BatarangRenderer extends ProjectileEntityRenderer<PersistentProject
 
     @Override
     public Identifier getTexture(PersistentProjectileEntity entity) {
-        return TEXTURE;
-    }
-
-    public void vertex(Matrix4f pos, Matrix3f normalMatrix, VertexConsumer vc,
-                       int x, int y, int z, float u, float v,
-                       int normalX, int normalZ, int normalY, int light) {
-
-        vc.vertex(pos, (float)x, (float)y, (float)z)
-                .color(255, 255, 255, 255)
-                .texture(u, v)
-                .overlay(OverlayTexture.DEFAULT_UV)
-                .light(light)
-                .normal(normalMatrix, (float)normalX, (float)normalY, (float)normalZ)
-                .next();
+        return SpriteAtlasTexture.BLOCK_ATLAS_TEXTURE;
     }
 }
+

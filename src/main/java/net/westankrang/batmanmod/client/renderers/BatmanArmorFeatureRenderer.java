@@ -9,16 +9,15 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
-import net.minecraft.client.render.entity.model.BipedEntityModel;
-import net.minecraft.client.render.entity.model.EntityModel;
-import net.minecraft.client.render.entity.model.EntityModelLoader;
-import net.minecraft.client.render.entity.model.ModelWithArms;
+import net.minecraft.client.render.entity.model.*;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationAxis;
 import net.westankrang.batmanmod.BatmanMod;
 import net.westankrang.batmanmod.client.models.wearable.BatmanArmorModel;
 import net.westankrang.batmanmod.main.items.BatmanArmorItem;
@@ -57,10 +56,16 @@ public class BatmanArmorFeatureRenderer<T extends LivingEntity, M extends Entity
             if (stack.getItem() instanceof BatmanArmorItem item) {
                 this.color = item.getColor();
                 enablePart(model, part);
+
+                if (part == BodyParts.CHEST && livingEntity instanceof AbstractClientPlayerEntity player) {
+                    model.renderCapeRotation(matrixStack, vertexConsumerProvider.getBuffer(RenderLayer.getEntitySolid(getTexture(color))), player, i, h);
+                }
+
             } else {
                 disablePart(model, part);
             }
         }
+
 
         this.model.Head.copyTransform(((BipedEntityModel) getContextModel()).head);
         this.model.Body.copyTransform(((BipedEntityModel) getContextModel()).body);
@@ -68,9 +73,10 @@ public class BatmanArmorFeatureRenderer<T extends LivingEntity, M extends Entity
         this.model.RightArm.copyTransform(((BipedEntityModel) getContextModel()).rightArm);
         this.model.LeftLeg.copyTransform(((BipedEntityModel) getContextModel()).leftLeg);
         this.model.RightLeg.copyTransform(((BipedEntityModel) getContextModel()).rightLeg);
+
         this.model.setAngles(livingEntity, f, g, j, k, l);
 
-        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(texture));
+        VertexConsumer vertexConsumer = vertexConsumerProvider.getBuffer(RenderLayer.getEntityCutoutNoCullZOffset(getTexture(color)));
         this.model.render(matrixStack, vertexConsumer, i, OverlayTexture.DEFAULT_UV, 1, 1, 1, 1f);
 
         matrixStack.pop();
